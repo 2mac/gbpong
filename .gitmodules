@@ -1,0 +1,3 @@
+[submodule "libstdgb"]
+	path = libstdgb
+	url = http://git.delwink.com/git/r/libstdgb.git

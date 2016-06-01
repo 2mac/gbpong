@@ -1,0 +1,14 @@
+{
+    "name": "PONG",
+    "mbc": "mbc5+ram+batt",
+    "hex": "pong.ihx",
+    "output": "pong.gb",
+
+    "tilesets": [
+	{
+	    "img": "tiles.png",
+	    "data": "TILES",
+	    "bank": 1
+	}
+    ]
+}

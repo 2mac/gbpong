@@ -1,0 +1,11 @@
+*.asm
+*.gb
+*.lk
+*.map
+*.rel
+*.ihx
+*.lst
+*.noi
+*.sym
+
+libstdgb/
