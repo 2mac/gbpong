@@ -76,6 +76,7 @@ game_draw ()
 {
   char *screen = GB_SCRN0;
 
+  gb_wait_vblank ();
   gb_update_objects ();
 
   write_text (&screen[SCORE1POS], score1buf);

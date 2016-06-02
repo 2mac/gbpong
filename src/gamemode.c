@@ -37,11 +37,9 @@ change_gamemode (const struct gamemode *mode)
 void
 gamemode_cycle ()
 {
-  if (!active_mode)
-    return;
-
-  active_mode->update ();
-
-  gb_wait_vblank ();
-  active_mode->draw ();
+  if (active_mode)
+    {
+      active_mode->update ();
+      active_mode->draw ();
+    }
 }

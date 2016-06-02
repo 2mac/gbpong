@@ -73,6 +73,7 @@ splash_draw ()
 	frames = 0;
     }
 
+  gb_wait_vblank ();
   write_text (screen, start_text);
 }
 
