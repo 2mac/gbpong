@@ -59,7 +59,8 @@ splash_update ()
 static void
 splash_draw ()
 {
-  char *start_text, *screen = GB_SCRN0;
+  const char *start_text;
+  char *screen = GB_SCRN0;
   screen = &screen[(32 * 12) + 4];
 
   if (frames++ < 30)
