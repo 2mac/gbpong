@@ -31,6 +31,9 @@ change_gamemode (const struct gamemode *mode)
     }
 
   mode->init ();
+  if (active_mode)
+    mode->update ();
+
   active_mode = mode;
 }
 
