@@ -1,4 +1,4 @@
-CC=sdcc
+CC=sdcc --opt-code-size
 CFLAGS=-mgbz80 -Ilibstdgb -Llibstdgb
 ROMGEN=./libstdgb/gbromgen --verbose
 
