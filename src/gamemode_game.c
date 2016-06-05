@@ -53,6 +53,8 @@ static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 uint8_t paddle_size = 4;
 uint8_t paddle_speed = 1;
 uint8_t winning_score = 11;
+int8_t speed1 = 2;
+int8_t speed2 = 1;
 
 static void
 format_score (uint8_t score, char *buf)
@@ -230,14 +232,14 @@ game_update ()
   gb_update_input_state ();
 
   if (gb_dpad_down (GB_DPAD_DOWN))
-    move1 = 1;
+    move1 = speed1;
   else if (gb_dpad_down (GB_DPAD_UP))
-    move1 = -1;
+    move1 = -speed1;
 
   if (ball_y > pos2)
-    move2 = 1;
+    move2 = speed2;
   else if (ball_y < pos2)
-    move2 = -1;
+    move2 = -speed2;
 
   move_paddle (&pos1, p1objs, move1);
   move_paddle (&pos2, p2objs, move2);
