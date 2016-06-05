@@ -1,5 +1,4 @@
-CC=sdcc --opt-code-size
-CFLAGS=-mgbz80 -Ilibstdgb -Llibstdgb
+CC=sdcc --opt-code-size -mgbz80 -Ilibstdgb -Llibstdgb
 ROMGEN=./libstdgb/gbromgen --verbose
 
 COMPILE=$(CC) $(CFLAGS) -c
@@ -11,8 +10,9 @@ pong: stdgb
 	$(COMPILE) src/gamemode_game.c
 	$(COMPILE) src/gamemode_splash.c
 	$(COMPILE) src/text.c
-	$(CC) $(CFLAGS) src/pong.c gamemode.rel gamemode_game.rel \
-		gamemode_splash.rel text.rel -lstdgb
+	$(CC) $(CFLAGS) src/pong.c \
+		gamemode.rel gamemode_game.rel gamemode_splash.rel text.rel \
+		-lstdgb
 	$(ROMGEN) rom-spec.json
 
 stdgb:
