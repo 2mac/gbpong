@@ -31,6 +31,7 @@ main (void)
   gb_disable_interrupts ();
 
   gb_set_all_tile_data (0);
+  gb_mbc5_select_rombank (1);
   for (i = 0; i < 128; ++i)
     gb_define_tile (i, TILES[i]);
 
