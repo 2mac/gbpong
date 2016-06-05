@@ -16,9 +16,14 @@
  */
 
 #include <stdgb.h>
+#include <string.h>
 #include "gamemode.h"
 
 const uint8_t (* const TILES)[GB_BYTES_PER_TILE] = NULL;
+const uint8_t ZERO_BUFFER[16] =
+  {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
 
 void
 main (void)
@@ -30,8 +35,13 @@ main (void)
   gb_set_lcd_mode (GB_LCD_OFF);
   gb_disable_interrupts ();
 
+  do
+    {
+      gb_mbc5_select_rombank (1);
+    }
+  while (memcmp (TILES[0], ZERO_BUFFER, 16) != 0);
+
   gb_set_all_tile_data (0);
-  gb_mbc5_select_rombank (1);
   for (i = 0; i < 128; ++i)
     gb_define_tile (i, TILES[i]);
 
