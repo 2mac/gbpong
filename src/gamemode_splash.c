@@ -53,7 +53,16 @@ splash_update ()
 {
   gb_update_input_state ();
   if (gb_button_down (GB_BTN_START))
-    change_gamemode (GAME_MODE);
+    {
+      do
+	{
+	  gb_wait_vblank ();
+	  gb_update_input_state ();
+	}
+      while (gb_button_down (GB_BTN_START));
+
+      change_gamemode (GAME_MODE);
+    }
 }
 
 static void
