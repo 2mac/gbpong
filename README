@@ -3,6 +3,29 @@ gbpong
 
 Pong on the Game Boy!
 
+Build Instructions
+------------------
+
+You'll need the GNU Make, Small Device C Compiler (SDCC) and Wand for
+Python 3. On Debian-based systems, you can install as follows:
+
+    # apt-get install make sdcc python3-wand
+
+After that, just run
+
+    $ git submodule init
+    $ git submodule update
+    $ make
+
+Finally, you'll have `pong.gb` which can be run on an emulator or flashed to
+your programmable cartridge.
+
+Hacking
+-------
+
+gbpong uses the GNU coding style for C with a strict 79-column limit in its
+source code. Tabs may be used in place of 8 spaces when indenting.
+
 License
 -------
 
