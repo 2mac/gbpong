@@ -29,6 +29,7 @@
 #define RIGHT_PADDLE_X (148)
 #define MIN_PADDLE_POS (25)
 #define MAX_PADDLE_POS (117)
+#define STARTING_PADDLE_POS (72)
 #define SCORE1POS (3)
 #define SCORE2POS (14)
 
@@ -40,21 +41,29 @@ typedef uint8_t bool;
 # define false (0)
 #endif
 
-static uint8_t (*p1objs)[GB_BYTES_PER_OBJ];
-static uint8_t (*p2objs)[GB_BYTES_PER_OBJ];
+struct player
+{
+  uint8_t (*objs)[GB_BYTES_PER_OBJ];
+  uint8_t x_pos;
+  uint8_t y_pos;
+  int8_t speed;
+  int8_t vel;
+};
+
+struct player p1, p2;
+
 static uint8_t *ballobj;
 static char score1buf[4], score2buf[4];
 static uint8_t delay_state, half_paddle_height, paddle_height;
-static uint8_t score1, score2, pos1, pos2;
-static int16_t ball_x, ball_y;
+static uint8_t score1, score2;
+static int16_t ball_x, ball_y, top_edge, bottom_edge;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
+static int8_t inverted_x, inverted_y;
 
 uint8_t paddle_size = 4;
 uint8_t winning_score = 11;
 int8_t min_ball_speed;
 int8_t max_ball_speed = 2;
-int8_t speed1 = 2;
-int8_t speed2 = 1;
 
 static void
 format_score (uint8_t score, char *buf)
@@ -72,15 +81,17 @@ format_score (uint8_t score, char *buf)
 }
 
 static void
-init_paddle (uint8_t (*paddle)[GB_BYTES_PER_OBJ], uint8_t x_pos)
+init_paddle (struct player *p)
 {
   uint8_t i;
 
+  p->y_pos = STARTING_PADDLE_POS;
+
   for (i = 0; i < paddle_size; ++i)
     {
-      paddle[i][GB_OBJ_YPOS] = 16 + 72 - half_paddle_height + (8 * i);
-      paddle[i][GB_OBJ_XPOS] = x_pos;
-      paddle[i][GB_OBJ_TILE] = PADDLE_TILE;
+      p->objs[i][GB_OBJ_YPOS] = 16 + 72 - half_paddle_height + (8 * i);
+      p->objs[i][GB_OBJ_XPOS] = p->x_pos;
+      p->objs[i][GB_OBJ_TILE] = PADDLE_TILE;
     }
 }
 
@@ -96,10 +107,8 @@ reset_ball ()
 static void
 reset_positions ()
 {
-  pos1 = 72;
-  pos2 = 72;
-  init_paddle (p1objs, LEFT_PADDLE_X);
-  init_paddle (p2objs, RIGHT_PADDLE_X);
+  init_paddle (&p1);
+  init_paddle (&p2);
 
   reset_ball ();
 }
@@ -112,10 +121,15 @@ game_init ()
 
   gb_init_objects ();
 
-  p1objs = GB_OBJECTS;
-  p2objs = &p1objs[paddle_size];
-  ballobj = (void *) &p2objs[paddle_size];
+  p1.objs = GB_OBJECTS;
+  p2.objs = &p1.objs[paddle_size];
+  ballobj = (void *) &p2.objs[paddle_size];
   ballobj[GB_OBJ_TILE] = BALL_TILE;
+
+  p1.speed = 2;
+  p1.x_pos = LEFT_PADDLE_X;
+  p2.speed = 1;
+  p2.x_pos = RIGHT_PADDLE_X;
 
   min_ball_speed = -max_ball_speed;
   score1 = 0;
@@ -144,18 +158,18 @@ game_finish ()
 }
 
 static void
-move_paddle (uint8_t *pos, uint8_t (*objs)[GB_BYTES_PER_OBJ], int8_t magnitude)
+move_paddle (struct player *p, int8_t magnitude)
 {
-  uint8_t try = *pos + magnitude;
+  uint8_t try = p->y_pos + magnitude;
 
   if (try < MIN_PADDLE_POS)
     magnitude += MIN_PADDLE_POS - try;
   else if (try > MAX_PADDLE_POS)
     magnitude -= try - MAX_PADDLE_POS;
 
-  *pos += magnitude;
+  p->y_pos += magnitude;
   for (try = 0; try < paddle_size; ++try)
-    objs[try][GB_OBJ_YPOS] += magnitude;
+    p->objs[try][GB_OBJ_YPOS] += magnitude;
 }
 
 static void
@@ -172,12 +186,9 @@ same_sign (int16_t x, int16_t y)
 }
 
 static void
-inc_ball_y_speed ()
+inc_abs_value (int8_t *p)
 {
-  if (ball_y_speed >= 0)
-    ++ball_y_speed;
-  else
-    --ball_y_speed;
+  *p = (*p >= 0) ? *p + 1 : *p - 1;
 }
 
 static void
@@ -190,11 +201,47 @@ cap_ball_speed (int8_t *speed)
 }
 
 static void
+check_collision (struct player *p, int16_t ox)
+{
+  int16_t oy;
+
+  if (ox >= 0 && ox <= 8)
+    {
+      if (ball_y <= p->y_pos)
+	oy = bottom_edge - (p->y_pos - half_paddle_height);
+      else
+	oy = (p->y_pos + half_paddle_height) - top_edge;
+
+      if (oy >= 0)
+	{
+	  inc_abs_value (&inverted_y);
+
+	  if (ox <= oy)
+	    {
+	      ball_x_speed = inverted_x;
+	      inc_abs_value (&ball_x_speed);
+
+	      if (p->vel)
+		{
+		  if (0 == ball_y_speed)
+		    ball_y_speed = p->vel;
+		  else if (same_sign (ball_y_speed, p->vel))
+		    inc_abs_value (&ball_y_speed);
+		  else
+		    ball_y_speed = inverted_y;
+		}
+	    }
+
+	  if (ox >= oy && !same_sign (ball_y_speed, p->vel))
+	    ball_y_speed = inverted_y;
+	}
+    }
+}
+
+static void
 game_update ()
 {
-  int8_t inverted_x = -ball_x_speed, inverted_y = -ball_y_speed;
-  int8_t move1 = 0, move2 = 0;
-  int16_t top_edge, bottom_edge, left_edge, right_edge;
+  int16_t left_edge, right_edge;
 
   switch (delay_state)
     {
@@ -238,20 +285,25 @@ game_update ()
       break;
     }
 
+  p1.vel = 0;
+  p2.vel = 0;
+  inverted_x = -ball_x_speed;
+  inverted_y = -ball_y_speed;
+
   gb_update_input_state ();
 
-  if (gb_dpad_down (GB_DPAD_DOWN) && pos1 < MAX_PADDLE_POS)
-    move1 = speed1;
-  else if (gb_dpad_down (GB_DPAD_UP) && pos1 > MIN_PADDLE_POS)
-    move1 = -speed1;
+  if (gb_dpad_down (GB_DPAD_DOWN) && p1.y_pos < MAX_PADDLE_POS)
+    p1.vel = p1.speed;
+  else if (gb_dpad_down (GB_DPAD_UP) && p1.y_pos > MIN_PADDLE_POS)
+    p1.vel = -p1.speed;
 
-  if (ball_y > pos2 && pos2 < MAX_PADDLE_POS)
-    move2 = speed2;
-  else if (ball_y < pos2 && pos2 > MIN_PADDLE_POS)
-    move2 = -speed2;
+  if (ball_y > p2.y_pos && p2.y_pos < MAX_PADDLE_POS)
+    p2.vel = p2.speed;
+  else if (ball_y < p2.y_pos && p2.y_pos > MIN_PADDLE_POS)
+    p2.vel = -p2.speed;
 
-  move_paddle (&pos1, p1objs, move1);
-  move_paddle (&pos2, p2objs, move2);
+  move_paddle (&p1, p1.vel);
+  move_paddle (&p2, p2.vel);
 
   ball_x += ball_x_speed;
   ball_y += ball_y_speed;
@@ -273,82 +325,28 @@ game_update ()
 
   if (ball_x_speed < 0)
     {
-      int16_t ox = LEFT_PADDLE_X - left_edge;
-      int16_t oy;
-
       if (ball_x <= 0)
 	{
 	  score ();
 	  ++score2;
 	  ball_x_speed = 1;
 	}
-      else if (ox >= 0 && ox <= 8)
+      else
 	{
-	  if (ball_y <= pos1)
-	    oy = bottom_edge - (pos1 - half_paddle_height);
-	  else
-	    oy = (pos1 + half_paddle_height) - top_edge;
-
-	  if (oy >= 0)
-	    {
-	      if (ox <= oy)
-		{
-		  ball_x_speed = inverted_x + 1;
-
-		  if (move1)
-		    {
-		      if (0 == ball_y_speed)
-			ball_y_speed = move1;
-		      else if (same_sign (ball_y_speed, move1))
-			inc_ball_y_speed ();
-		      else
-			ball_y_speed = inverted_y + 1;
-		    }
-		}
-
-	      if (ox >= oy)
-		ball_y_speed = inverted_y + 1;
-	    }
+	  check_collision (&p1, LEFT_PADDLE_X - left_edge);
 	}
     }
   else
     {
-      int16_t ox = right_edge - (RIGHT_PADDLE_X - 8);
-      int16_t oy;
-
       if (ball_x >= 160)
 	{
 	  score ();
 	  ++score1;
 	  ball_x_speed = -1;
 	}
-      else if (ox >= 0 && ox <= 8)
+      else
 	{
-	  if (ball_y <= pos2)
-	    oy = bottom_edge - (pos2 - half_paddle_height);
-	  else
-	    oy = (pos2 + half_paddle_height) - top_edge;
-
-	  if (oy >= 0)
-	    {
-	      if (ox <= oy)
-		{
-		  ball_x_speed = inverted_x - 1;
-
-		  if (move2)
-		    {
-		      if (0 == ball_y_speed)
-			ball_y_speed = move2;
-		      else if (same_sign (ball_y_speed, move2))
-			inc_ball_y_speed ();
-		      else
-			ball_y_speed = inverted_y + 1;
-		    }
-		}
-
-	      if (ox >= oy)
-		ball_y_speed = inverted_y + 1;
-	    }
+	  check_collision (&p2, right_edge - (RIGHT_PADDLE_X - 8));
 	}
     }
 
