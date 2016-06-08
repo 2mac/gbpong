@@ -51,7 +51,6 @@ static int16_t ball_x, ball_y;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 
 uint8_t paddle_size = 4;
-uint8_t paddle_speed = 1;
 uint8_t winning_score = 11;
 int8_t speed1 = 2;
 int8_t speed2 = 1;
@@ -143,9 +142,8 @@ game_finish ()
 }
 
 static void
-move_paddle (uint8_t *pos, uint8_t (*objs)[GB_BYTES_PER_OBJ], int8_t direction)
+move_paddle (uint8_t *pos, uint8_t (*objs)[GB_BYTES_PER_OBJ], int8_t magnitude)
 {
-  int8_t magnitude = direction * paddle_speed;
   uint8_t try = *pos + magnitude;
 
   if (try < MIN_PADDLE_POS)
