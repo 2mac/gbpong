@@ -52,8 +52,8 @@ struct player
 
 struct player p1, p2;
 
-static uint8_t *ballobj;
 static char score1buf[4], score2buf[4];
+static uint8_t *ballobj;
 static uint8_t delay_state, half_paddle_height, paddle_height;
 static uint8_t score1, score2;
 static int16_t ball_x, ball_y, top_edge, bottom_edge;
