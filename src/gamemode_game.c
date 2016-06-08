@@ -49,9 +49,10 @@ static uint8_t score1, score2, pos1, pos2;
 static int16_t ball_x, ball_y;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 
-uint8_t max_ball_speed = 2;
 uint8_t paddle_size = 4;
 uint8_t winning_score = 11;
+int8_t min_ball_speed;
+int8_t max_ball_speed = 2;
 int8_t speed1 = 2;
 int8_t speed2 = 1;
 
@@ -116,6 +117,7 @@ game_init ()
   ballobj = (void *) &p2objs[paddle_size];
   ballobj[GB_OBJ_TILE] = BALL_TILE;
 
+  min_ball_speed = -max_ball_speed;
   score1 = 0;
   score2 = 0;
   delay_state = 1;
@@ -176,6 +178,15 @@ inc_ball_y_speed ()
     ++ball_y_speed;
   else
     --ball_y_speed;
+}
+
+static void
+cap_ball_speed (int8_t *speed)
+{
+  if (*speed > max_ball_speed)
+    *speed = max_ball_speed;
+  else if (*speed < min_ball_speed)
+    *speed = min_ball_speed;
 }
 
 static void
@@ -341,10 +352,8 @@ game_update ()
 	}
     }
 
-  if (ball_x_speed > max_ball_speed)
-    ball_x_speed = max_ball_speed;
-  if (ball_y_speed > max_ball_speed)
-    ball_y_speed = max_ball_speed;
+  cap_ball_speed (&ball_x_speed);
+  cap_ball_speed (&ball_y_speed);
 
   ballobj[GB_OBJ_XPOS] = 8 + ball_x - (BALL_SIZE / 2);
   ballobj[GB_OBJ_YPOS] = 16 + ball_y - (BALL_SIZE / 2);
