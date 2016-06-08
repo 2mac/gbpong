@@ -29,7 +29,6 @@
 #define RIGHT_PADDLE_X (148)
 #define MIN_PADDLE_POS (25)
 #define MAX_PADDLE_POS (117)
-#define MAX_BALL_SPEED (2)
 #define SCORE1POS (3)
 #define SCORE2POS (14)
 
@@ -50,6 +49,7 @@ static uint8_t score1, score2, pos1, pos2;
 static int16_t ball_x, ball_y;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 
+uint8_t max_ball_speed = 2;
 uint8_t paddle_size = 4;
 uint8_t winning_score = 11;
 int8_t speed1 = 2;
@@ -341,10 +341,10 @@ game_update ()
 	}
     }
 
-  if (ball_x_speed > MAX_BALL_SPEED)
-    ball_x_speed = MAX_BALL_SPEED;
-  if (ball_y_speed > MAX_BALL_SPEED)
-    ball_y_speed = MAX_BALL_SPEED;
+  if (ball_x_speed > max_ball_speed)
+    ball_x_speed = max_ball_speed;
+  if (ball_y_speed > max_ball_speed)
+    ball_y_speed = max_ball_speed;
 
   ballobj[GB_OBJ_XPOS] = 8 + ball_x - (BALL_SIZE / 2);
   ballobj[GB_OBJ_YPOS] = 16 + ball_y - (BALL_SIZE / 2);
