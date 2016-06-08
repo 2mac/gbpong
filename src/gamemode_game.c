@@ -231,9 +231,9 @@ game_update ()
 
   gb_update_input_state ();
 
-  if (gb_dpad_down (GB_DPAD_DOWN))
+  if (gb_dpad_down (GB_DPAD_DOWN) && pos1 != MAX_PADDLE_POS)
     move1 = speed1;
-  else if (gb_dpad_down (GB_DPAD_UP))
+  else if (gb_dpad_down (GB_DPAD_UP) && pos1 != MIN_PADDLE_POS)
     move1 = -speed1;
 
   if (ball_y > pos2)
