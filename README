@@ -3,6 +3,11 @@ gbpong
 
 Pong on the Game Boy!
 
+This small game is designed as a demonstration for Delwink's libstdgb library
+for developing for the Game Boy. Since Pong is the "hello world" of game
+development, I thought it would be well-suited as a test of the library's
+capabilities and the readability of its API.
+
 Build Instructions
 ------------------
 
