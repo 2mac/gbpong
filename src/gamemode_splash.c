@@ -79,7 +79,7 @@ splash_draw ()
   else
     {
       start_text = "            ";
-      if (frames > 60)
+      if (frames >= 60)
 	frames = 0;
     }
 
