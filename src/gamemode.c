@@ -46,3 +46,29 @@ gamemode_cycle ()
       active_mode->draw ();
     }
 }
+
+uint8_t winning_score = 11;
+uint8_t difficulty = 0;
+const struct difficulty difficulties[NUM_DIFFICULTIES] =
+  {
+    {
+      .paddle_size = 4,
+      .max_ball_speed = 2,
+      .p1speed = 2,
+      .p2speed = 1
+    },
+
+    {
+      .paddle_size = 4,
+      .max_ball_speed = 2,
+      .p1speed = 1,
+      .p2speed = 1
+    },
+
+    {
+      .paddle_size = 4,
+      .max_ball_speed = 3,
+      .p1speed = 1,
+      .p2speed = 1
+    }
+  };

@@ -55,14 +55,11 @@ static char score1buf[4], score2buf[4];
 static uint8_t *ballobj;
 static uint8_t delay_state, half_paddle_height, paddle_height;
 static uint8_t score1, score2;
+static uint8_t paddle_size;
 static int16_t ball_x, ball_y, top_edge, bottom_edge;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 static int8_t inverted_x, inverted_y;
-
-uint8_t paddle_size = 4;
-uint8_t winning_score = 11;
-int8_t min_ball_speed;
-int8_t max_ball_speed = 2;
+static int8_t min_ball_speed, max_ball_speed;
 
 static void
 format_score (uint8_t score, char *buf)
@@ -117,20 +114,24 @@ game_init ()
 {
   uint8_t i;
   char *screen = GB_SCRN0;
+  const struct difficulty *d = &difficulties[difficulty];
 
   gb_init_objects ();
+
+  p1.speed = d->p1speed;
+  p1.x_pos = LEFT_PADDLE_X;
+  p2.speed = d->p2speed;
+  p2.x_pos = RIGHT_PADDLE_X;
+
+  paddle_size = d->paddle_size;
+  max_ball_speed = d->max_ball_speed;
+  min_ball_speed = -max_ball_speed;
 
   p1.objs = GB_OBJECTS;
   p2.objs = &p1.objs[paddle_size];
   ballobj = (void *) &p2.objs[paddle_size];
   ballobj[GB_OBJ_TILE] = BALL_TILE;
 
-  p1.speed = 2;
-  p1.x_pos = LEFT_PADDLE_X;
-  p2.speed = 1;
-  p2.x_pos = RIGHT_PADDLE_X;
-
-  min_ball_speed = -max_ball_speed;
   score1 = 0;
   score2 = 0;
   delay_state = 1;
