@@ -31,6 +31,12 @@ Hacking
 gbpong uses the GNU coding style for C with a strict 79-column limit in its
 source code. Tabs may be used in place of 8 spaces when indenting.
 
+Since the Game Boy is a very limited platform, code is expected to be written
+for binary efficiency. If you're just getting into Game Boy development, try
+mixing around nested `if` checks, and evaluate when pointers can efficiently be
+used, and check the output of `gbromgen` to see how your code affects the
+binary size.
+
 License
 -------
 
