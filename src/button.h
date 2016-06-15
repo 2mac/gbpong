@@ -15,27 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef GBPONG_BUTTON_H
+#define GBPONG_BUTTON_H
+
 #include <stdint.h>
-#include "text.h"
+#include "bool.h"
 
-void
-format_byte (uint8_t byte, char *buf)
+struct input
 {
-  buf[3] = '\0';
-  write_text (buf, "   ");
-  buf = &buf[2];
+  uint8_t code;
+  bool pressed;
+};
 
-  do
-    {
-      *(buf--) = (byte % 10) + '0';
-      byte /= 10;
-    }
-  while (byte);
-}
+extern struct input * const INPUT_A;
+extern struct input * const INPUT_B;
+extern struct input * const INPUT_START;
+extern struct input * const INPUT_SELECT;
+extern struct input * const INPUT_UP;
+extern struct input * const INPUT_DOWN;
+extern struct input * const INPUT_LEFT;
+extern struct input * const INPUT_RIGHT;
 
-void
-write_text (char *dest, const char *src)
-{
-  while (*src != '\0')
-    *(dest++) = *(src++);
-}
+bool
+button_pressed (struct input *button);
+
+bool
+dpad_pressed (struct input *direction);
+
+#endif

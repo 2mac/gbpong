@@ -6,12 +6,14 @@ COMPILE=$(CC) $(CFLAGS) -c
 all: pong
 
 pong: stdgb
+	$(COMPILE) src/button.c
 	$(COMPILE) src/gamemode.c
 	$(COMPILE) src/gamemode_game.c
 	$(COMPILE) src/gamemode_splash.c
 	$(COMPILE) src/text.c
 	$(CC) $(CFLAGS) src/pong.c \
-		gamemode.rel gamemode_game.rel gamemode_splash.rel text.rel \
+		button.rel gamemode.rel gamemode_game.rel \
+		gamemode_splash.rel text.rel \
 		-lstdgb
 	$(ROMGEN) rom-spec.json
 

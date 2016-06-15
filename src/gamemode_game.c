@@ -17,6 +17,7 @@
 
 #include <stdgb.h>
 #include "bool.h"
+#include "button.h"
 #include "gamemode.h"
 #include "text.h"
 
@@ -44,6 +45,7 @@ struct player
 };
 
 static struct player p1, p2;
+static bool paused;
 static char score1buf[4], score2buf[4];
 static uint8_t *ballobj;
 static uint8_t delay_state, half_paddle_height, paddle_height;
@@ -110,6 +112,7 @@ game_init ()
   ballobj = (void *) &p2.objs[paddle_size];
   ballobj[GB_OBJ_TILE] = BALL_TILE;
 
+  paused = false;
   score1 = 0;
   score2 = 0;
   delay_state = 1;
@@ -223,10 +226,7 @@ game_update ()
 
   switch (delay_state)
     {
-    case 2:
-      for (; delay_state < 122; ++delay_state)
-	gb_wait_vblank ();
-
+    case 122:
       ball_x_start_speed *= -1;
       reset_positions ();
       score1 = 0;
@@ -234,28 +234,7 @@ game_update ()
       delay_state = 0;
       break;
 
-    case 123:
-      for (; delay_state < 183; ++delay_state)
-	gb_wait_vblank ();
-
-      delay_state = 0;
-      break;
-
-    case 184:
-      do
-	{
-	  gb_wait_vblank ();
-	  gb_update_input_state ();
-	}
-      while (!gb_button_down (GB_BTN_START));
-
-      do
-	{
-	  gb_wait_vblank ();
-	  gb_update_input_state ();
-	}
-      while (gb_button_down (GB_BTN_START));
-
+    case 183:
       delay_state = 0;
       break;
 
@@ -269,6 +248,12 @@ game_update ()
   inverted_y = -ball_y_speed;
 
   gb_update_input_state ();
+
+  if (button_pressed (INPUT_START))
+    paused = !paused;
+
+  if (paused || delay_state)
+    return;
 
   if (gb_dpad_down (GB_DPAD_DOWN) && p1.y_pos < MAX_PADDLE_POS)
     p1.vel = p1.speed;
@@ -333,13 +318,6 @@ game_update ()
 
   ballobj[GB_OBJ_XPOS] = 8 + ball_x - (BALL_SIZE / 2);
   ballobj[GB_OBJ_YPOS] = 16 + ball_y - (BALL_SIZE / 2);
-
-  while (gb_button_down (GB_BTN_START))
-    {
-      gb_wait_vblank ();
-      gb_update_input_state ();
-      delay_state = 183;
-    }
 
   if (score1 >= winning_score || score2 >= winning_score)
     delay_state = 1;

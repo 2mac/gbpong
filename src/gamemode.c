@@ -67,8 +67,8 @@ const struct difficulty difficulties[NUM_DIFFICULTIES] =
 
     {
       .paddle_size = 4,
-      .max_ball_speed = 3,
+      .max_ball_speed = 4,
       .p1speed = 1,
-      .p2speed = 1
+      .p2speed = 2
     }
   };
