@@ -15,27 +15,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdint.h>
-#include "text.h"
+#ifndef GBPONG_BOOL_H
+#define GBPONG_BOOL_H
 
-void
-format_byte (uint8_t score, char *buf)
-{
-  buf[3] = '\0';
-  write_text (buf, "   ");
-  buf = &buf[2];
+#ifndef INT_BOOLS
+# include <stdbool.h>
+#else
+typedef uint8_t bool;
+# define true (1)
+# define false (0)
+#endif
 
-  do
-    {
-      *(buf--) = (score % 10) + '0';
-      score /= 10;
-    }
-  while (score);
-}
-
-void
-write_text (char *dest, const char *src)
-{
-  while (*src != '\0')
-    *(dest++) = *(src++);
-}
+#endif

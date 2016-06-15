@@ -22,6 +22,9 @@
 #define COPYRIGHT_STR "\x7F"
 
 void
+format_byte (uint8_t score, char *buf);
+
+void
 write_text (char *dest, const char *src);
 
 #endif

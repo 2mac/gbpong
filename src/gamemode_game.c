@@ -16,6 +16,7 @@
  */
 
 #include <stdgb.h>
+#include "bool.h"
 #include "gamemode.h"
 #include "text.h"
 
@@ -32,14 +33,6 @@
 #define STARTING_PADDLE_POS (72)
 #define SCORE1POS (3)
 #define SCORE2POS (14)
-
-#ifndef INT_BOOLS
-# include <stdbool.h>
-#else
-typedef uint8_t bool;
-# define true (1)
-# define false (0)
-#endif
 
 struct player
 {
@@ -60,21 +53,6 @@ static int16_t ball_x, ball_y, top_edge, bottom_edge;
 static int8_t ball_x_speed, ball_y_speed, ball_x_start_speed;
 static int8_t inverted_x, inverted_y;
 static int8_t min_ball_speed, max_ball_speed;
-
-static void
-format_score (uint8_t score, char *buf)
-{
-  buf[3] = '\0';
-  write_text (buf, "   ");
-  buf = &buf[2];
-
-  do
-    {
-      *(buf--) = (score % 10) + '0';
-      score /= 10;
-    }
-  while (score);
-}
 
 static void
 init_paddle (struct player *p)
@@ -366,8 +344,8 @@ game_update ()
   if (score1 >= winning_score || score2 >= winning_score)
     delay_state = 1;
 
-  format_score (score1, score1buf);
-  format_score (score2, score2buf);
+  format_byte (score1, score1buf);
+  format_byte (score2, score2buf);
 }
 
 static void
