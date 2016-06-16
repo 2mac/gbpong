@@ -25,6 +25,14 @@ After that, just run
 Finally, you'll have `pong.gb` which can be run on an emulator or flashed to
 your programmable cartridge.
 
+If you get a syntax error while compiling, try
+
+    $ make CFLAGS=-DINT_BOOLS
+
+On older versions of SDCC, the `bool` type doesn't work properly, so I added a
+way to use integers as boolean types. It makes the binary a bit larger and the
+computation slower, but it should still work.
+
 Hacking
 -------
 
