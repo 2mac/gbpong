@@ -65,7 +65,8 @@ splash_init ()
   screen = &screen[(32 * 15) + 7];
   write_text (screen, COPYRIGHT_STR " 2016");
 
-  screen = &screen[32 - 7 + 1];
+  screen = GB_SCRN0;
+  screen = &screen[(32 * 16) + 1];
   write_text (screen, "DAVID MCMACKINS II");
 
   gb_set_lcd_mode (GB_LCD_ON | GB_LCD_BGON);
