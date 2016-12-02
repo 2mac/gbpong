@@ -31,8 +31,12 @@ main (void)
   uint8_t i;
 
   gb_enable_vblank ();
-  gb_wait_vblank ();
-  gb_set_lcd_mode (GB_LCD_OFF);
+  if (*GB_LCD & GB_LCD_ON)
+    {
+      gb_wait_vblank ();
+      gb_set_lcd_mode (GB_LCD_OFF);
+    }
+
   gb_disable_interrupts ();
 
   do
