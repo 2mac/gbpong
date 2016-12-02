@@ -115,6 +115,8 @@ game_init ()
   paused = false;
   score1 = 0;
   score2 = 0;
+  format_byte (score1, score1buf);
+  format_byte (score2, score2buf);
   delay_state = 1;
   half_paddle_height = paddle_size * 4;
   paddle_height = half_paddle_height * 2;
