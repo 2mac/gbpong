@@ -1,6 +1,6 @@
 /*
  *  gbpong - Pong on the Game Boy
- *  Copyright (C) 2016 David McMackins II
+ *  Copyright (C) 2016-2017 David McMackins II
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,8 @@
 
 struct input
 {
-  uint8_t code;
-  bool pressed;
+	uint8_t code;
+	bool pressed;
 };
 
 extern struct input * const INPUT_A;
@@ -37,9 +37,9 @@ extern struct input * const INPUT_LEFT;
 extern struct input * const INPUT_RIGHT;
 
 bool
-button_pressed (struct input *button);
+button_pressed(struct input *button);
 
 bool
-dpad_pressed (struct input *direction);
+dpad_pressed(struct input *direction);
 
 #endif

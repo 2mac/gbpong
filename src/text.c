@@ -1,6 +1,6 @@
 /*
  *  gbpong - Pong on the Game Boy
- *  Copyright (C) 2016 David McMackins II
+ *  Copyright (C) 2016-2017 David McMackins II
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -19,23 +19,22 @@
 #include "text.h"
 
 void
-format_byte (uint8_t byte, char *buf)
+format_byte(uint8_t byte, char *buf)
 {
-  buf[3] = '\0';
-  write_text (buf, "   ");
-  buf = &buf[2];
+	buf[3] = '\0';
+	write_text(buf, "   ");
+	buf = &buf[2];
 
-  do
-    {
-      *(buf--) = (byte % 10) + '0';
-      byte /= 10;
-    }
-  while (byte);
+	do
+	{
+		*(buf--) = (byte % 10) + '0';
+		byte /= 10;
+	} while (byte);
 }
 
 void
-write_text (char *dest, const char *src)
+write_text(char *dest, const char *src)
 {
-  while (*src != '\0')
-    *(dest++) = *(src++);
+	while (*src != '\0')
+		*(dest++) = *(src++);
 }
