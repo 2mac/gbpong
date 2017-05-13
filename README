@@ -36,8 +36,7 @@ computation slower, but it should still work.
 Hacking
 -------
 
-gbpong uses the GNU coding style for C with a strict 79-column limit in its
-source code. Tabs may be used in place of 8 spaces when indenting.
+Match the style you see in the code. Do not use spaces for indentation.
 
 Since the Game Boy is a very limited platform, code is expected to be written
 for binary efficiency. If you're just getting into Game Boy development, try
